@@ -1,0 +1,12 @@
+name: phoenix_channels
+description: A Dart/Flutter client for Phoenix Channels.
+version: 1.0.0
+author:
+homepage:
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+
+dev_dependencies:
