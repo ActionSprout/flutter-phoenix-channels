@@ -19,15 +19,19 @@ abstract class PhoenixSocketEncoding {
 
 class PhoenixSocket {
   PhoenixSocket._({
-    this.encoding = const PhoenixJsonEncoding(),
+    this.encoding,
     this.ws,
   });
 
   final WebSocket ws;
   final PhoenixSocketEncoding encoding;
 
-  static Future<PhoenixSocket> connect(String address) async {
+  static Future<PhoenixSocket> connect(
+    String address, {
+    PhoenixSocketEncoding encoding = const PhoenixJsonEncoding(),
+  }) async {
     final socket = PhoenixSocket._(
+      encoding: encoding,
       ws: await WebSocket.connect('$address/websocket'),
     );
 
