@@ -18,12 +18,13 @@ class PhoenixSocket<T> {
   static Future<PhoenixSocket<T>> connect<T>({
     String address,
     PhoenixSocketEncoding<T> encoding,
+    Function onError,
   }) async =>
       PhoenixSocket<T>._(
         encoding: encoding,
         ws: await WebSocket.connect('$address/websocket'),
       )
-        .._attachListeners()
+        .._attachListeners(onError: onError)
         .._startHeartbeats();
 
   void close() {
@@ -44,15 +45,14 @@ class PhoenixSocket<T> {
     )));
   }
 
-  void _attachListeners() {
+  void _attachListeners({Function onError}) {
     ws.listen(
       (dynamic buffer) => _onMessage(encoding.decode(buffer as List<int>)),
-      onError: _onError,
+      onError: onError,
       onDone: close,
     );
   }
 
-  void _onError(dynamic error) => print('Error: $error');
   void _onMessage(PhoenixMessage message) => print('Data: $message');
 
   void _startHeartbeats() {

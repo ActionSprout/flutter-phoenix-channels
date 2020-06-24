@@ -9,6 +9,7 @@ Future<void> main(List<String> args) async {
   final socket = await PhoenixSocket.connect(
     address: address,
     encoding: const PhoenixProtobufEncoding(),
+    onError: (dynamic error) => print('Error: $error'),
   );
 
   socket.join(topic: 'room:lobby');
