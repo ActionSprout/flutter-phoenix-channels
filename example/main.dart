@@ -7,7 +7,7 @@ Future<void> main(List<String> args) async {
 
   final address = args.first;
   final socket = await PhoenixSocket.connect(
-    address,
+    address: address,
     encoding: const PhoenixProtobufEncoding(),
   );
 

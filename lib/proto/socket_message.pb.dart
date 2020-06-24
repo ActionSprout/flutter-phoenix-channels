@@ -9,13 +9,11 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'google/protobuf/any.pb.dart' as $0;
-
 class PhoenixSocketMessage extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('PhoenixSocketMessage', createEmptyInstance: create)
     ..aOS(1, 'event')
     ..aOS(2, 'topic')
-    ..aOM<$0.Any>(3, 'payload', subBuilder: $0.Any.create)
+    ..a<$core.List<$core.int>>(3, 'payload', $pb.PbFieldType.OY)
     ..aOS(4, 'joinRef')
     ..aOS(5, 'ref')
     ..hasRequiredFields = false
@@ -55,15 +53,13 @@ class PhoenixSocketMessage extends $pb.GeneratedMessage {
   void clearTopic() => clearField(2);
 
   @$pb.TagNumber(3)
-  $0.Any get payload => $_getN(2);
+  $core.List<$core.int> get payload => $_getN(2);
   @$pb.TagNumber(3)
-  set payload($0.Any v) { setField(3, v); }
+  set payload($core.List<$core.int> v) { $_setBytes(2, v); }
   @$pb.TagNumber(3)
   $core.bool hasPayload() => $_has(2);
   @$pb.TagNumber(3)
   void clearPayload() => clearField(3);
-  @$pb.TagNumber(3)
-  $0.Any ensurePayload() => $_ensure(2);
 
   @$pb.TagNumber(4)
   $core.String get joinRef => $_getSZ(3);

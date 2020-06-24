@@ -1,14 +1,11 @@
-import '../proto/google/protobuf/any.pb.dart';
 import '../proto/socket_message.pb.dart';
 import 'encoding.dart';
 
-export '../proto/google/protobuf/any.pb.dart';
-
-class PhoenixProtobufEncoding extends PhoenixSocketEncoding<Any> {
+class PhoenixProtobufEncoding extends PhoenixSocketEncoding<List<int>> {
   const PhoenixProtobufEncoding();
 
   @override
-  PhoenixMessage<Any> decode(List<int> buffer) {
+  PhoenixMessage<List<int>> decode(List<int> buffer) {
     final message = PhoenixSocketMessage.fromBuffer(buffer);
 
     return PhoenixMessage(
@@ -20,7 +17,7 @@ class PhoenixProtobufEncoding extends PhoenixSocketEncoding<Any> {
   }
 
   @override
-  List<int> encode(PhoenixMessage<Any> message) {
+  List<int> encode(PhoenixMessage<List<int>> message) {
     final protobuf = PhoenixSocketMessage.create()
       ..event = message.event
       ..topic = message.topic;

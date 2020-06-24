@@ -1,11 +1,9 @@
 syntax = "proto3";
 
-import "google/protobuf/any.proto";
-
 message PhoenixSocketMessage {
   string event = 1;
   string topic = 2;
-  google.protobuf.Any payload = 3;
+  bytes payload = 3;
   string join_ref = 4;
   string ref = 5;
 }
