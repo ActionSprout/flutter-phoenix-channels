@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'channel.dart';
 import 'encoding/json.dart';
 
 import 'message.dart';
@@ -53,6 +54,9 @@ class PhoenixSocket {
         event: 'heartbeat',
         topic: 'phoenix',
       );
+
+  PhoenixChannel join({String topic}) =>
+      PhoenixChannel(socket: this, topic: topic);
 
   void send<T>({String event, T payload, String ref, String topic}) {
     ws.add(encoding.encode(PhoenixMessage<T>(
