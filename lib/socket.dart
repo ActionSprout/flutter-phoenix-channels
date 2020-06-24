@@ -1,14 +1,29 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'encoding/json.dart';
+
+import 'message.dart';
+
 Function(dynamic) makeLogger(String label) => (dynamic event) {
       print('$label: $event');
     };
 
-class PhoenixSocket {
-  PhoenixSocket._({this.ws});
+abstract class PhoenixSocketEncoding {
+  const PhoenixSocketEncoding();
 
-  WebSocket ws;
+  String encode(PhoenixMessage message);
+  PhoenixMessage decode(String buffer);
+}
+
+class PhoenixSocket {
+  PhoenixSocket._({
+    this.encoding = const PhoenixJsonEncoding(),
+    this.ws,
+  });
+
+  final WebSocket ws;
+  final PhoenixSocketEncoding encoding;
 
   static Future<PhoenixSocket> connect(String address) async {
     final socket = PhoenixSocket._(
@@ -39,10 +54,13 @@ class PhoenixSocket {
         topic: 'phoenix',
       );
 
-  void send({String event, String payload, String ref, String topic}) {
-    ws.add(
-      '''{"topic": "$topic", "event": "$event", "payload": ${payload ?? '{}'}, "ref": $ref}''',
-    );
+  void send({String event, dynamic payload, String ref, String topic}) {
+    ws.add(encoding.encode(PhoenixMessage(
+      event: event,
+      payload: payload,
+      ref: ref,
+      topic: topic,
+    )));
   }
 
   void sendJoin({String topic}) => send(
