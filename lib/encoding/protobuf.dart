@@ -1,38 +1,36 @@
-import '../message.dart';
 import '../proto/google/protobuf/any.pb.dart';
 import '../proto/socket_message.pb.dart';
-import '../socket.dart';
+import 'encoding.dart';
 
-class PhoenixProtobufEncoding extends PhoenixSocketEncoding {
+export '../proto/google/protobuf/any.pb.dart';
+
+class PhoenixProtobufEncoding extends PhoenixSocketEncoding<Any> {
   const PhoenixProtobufEncoding();
 
   @override
-  PhoenixMessage decode(List<int> buffer) {
+  PhoenixMessage<Any> decode(List<int> buffer) {
     final message = PhoenixSocketMessage.fromBuffer(buffer);
 
-    return PhoenixMessage<dynamic>(
+    return PhoenixMessage(
       event: message.event,
-      payload: message.payload.value,
+      payload: message.payload,
       ref: message.ref,
       topic: message.topic,
     );
   }
 
   @override
-  List<int> encode(PhoenixMessage message) {
+  List<int> encode(PhoenixMessage<Any> message) {
     final protobuf = PhoenixSocketMessage.create()
       ..event = message.event
-      ..payload = Any()
       ..topic = message.topic;
+
+    if (message.payload != null) {
+      protobuf.payload = message.payload;
+    }
 
     if (message.ref != null) {
       protobuf.ref = message.ref;
-    }
-
-    if (message.payload != null) {
-      protobuf.payload.typeUrl = message.payload.runtimeType.toString();
-      // TODO(schoon): Replace with type parameter.
-      protobuf.payload.value = message.payload as List<int>;
     }
 
     return protobuf.writeToBuffer();

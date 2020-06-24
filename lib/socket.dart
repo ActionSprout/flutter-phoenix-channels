@@ -1,21 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:protobuf/protobuf.dart';
+
 import 'channel.dart';
+import 'encoding/encoding.dart';
 import 'encoding/json.dart';
 
-import 'message.dart';
-
 Function(dynamic) makeLogger(String label) => (dynamic event) {
-      print('$label: $event');
+      if (event is GeneratedMessage) {
+        print('$label: ${event.writeToJson()}');
+        return;
+      }
+
+      print('$label: (${event.runtimeType}) $event');
     };
-
-abstract class PhoenixSocketEncoding {
-  const PhoenixSocketEncoding();
-
-  List<int> encode(PhoenixMessage message);
-  PhoenixMessage decode(List<int> buffer);
-}
 
 class PhoenixSocket {
   PhoenixSocket._({
@@ -39,7 +38,10 @@ class PhoenixSocket {
 
     try {
       socket.ws.listen(
-        makeLogger('Data'),
+        (dynamic buffer) {
+          final message = encoding.decode(buffer as List<int>);
+          print('Data: $message');
+        },
         onError: makeLogger('Error'),
         onDone: () {
           print('Done.');

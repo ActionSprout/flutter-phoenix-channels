@@ -1,13 +1,12 @@
 import 'dart:convert';
 
-import '../message.dart';
-import '../socket.dart';
+import 'encoding.dart';
 
-class PhoenixJsonEncoding extends PhoenixSocketEncoding {
+class PhoenixJsonEncoding extends PhoenixSocketEncoding<Map<String, dynamic>> {
   const PhoenixJsonEncoding();
 
   @override
-  PhoenixMessage decode(List<int> buffer) {
+  PhoenixMessage<Map<String, dynamic>> decode(List<int> buffer) {
     final parts = json.decode(utf8.decode(buffer)) as Map<String, dynamic>;
 
     return PhoenixMessage<Map<String, dynamic>>(
@@ -19,7 +18,7 @@ class PhoenixJsonEncoding extends PhoenixSocketEncoding {
   }
 
   @override
-  List<int> encode(PhoenixMessage message) {
+  List<int> encode(PhoenixMessage<Map<String, dynamic>> message) {
     return utf8.encode(json.encode(<String, dynamic>{
       'event': message.event,
       'payload': message.payload,
