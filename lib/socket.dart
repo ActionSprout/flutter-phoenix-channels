@@ -1,8 +1,30 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'channel.dart';
 import 'encoding/encoding.dart';
+
+typedef DataCallback<T> = void Function({
+  String event,
+  T payload,
+});
+
+class PhoenixChannelSubscription {
+  const PhoenixChannelSubscription._({
+    int key,
+    PhoenixSocket socket,
+    String topic,
+  })  : _key = key,
+        _topic = topic,
+        _socket = socket;
+
+  final int _key;
+  final PhoenixSocket _socket;
+  final String _topic;
+
+  void cancel() {
+    _socket._removeSubscription(_topic, _key);
+  }
+}
 
 class PhoenixSocket<T> {
   PhoenixSocket._({
@@ -13,7 +35,9 @@ class PhoenixSocket<T> {
   final WebSocket ws;
   final PhoenixSocketEncoding<T> encoding;
 
+  final Map<String, Map<int, DataCallback<T>>> _callbacks = {};
   Timer _heartbeatTimer;
+  int _nextKey = 0;
 
   static Future<PhoenixSocket<T>> connect<T>({
     String address,
@@ -33,8 +57,23 @@ class PhoenixSocket<T> {
     ws.close();
   }
 
-  PhoenixChannel<T> join({String topic}) =>
-      PhoenixChannel<T>(socket: this, topic: topic);
+  PhoenixChannelSubscription join({DataCallback<T> onData, String topic}) {
+    final key = _nextKey++;
+
+    _callbacks.putIfAbsent(topic, () => {});
+
+    if (_callbacks[topic].isEmpty) {
+      send(event: 'phx_join', topic: topic);
+    }
+
+    _callbacks[topic][key] = onData;
+
+    return PhoenixChannelSubscription._(
+      key: key,
+      socket: this,
+      topic: topic,
+    );
+  }
 
   void send({String event, T payload, String ref, String topic}) {
     ws.add(encoding.encode(PhoenixMessage<T>(
@@ -53,7 +92,18 @@ class PhoenixSocket<T> {
     );
   }
 
-  void _onMessage(PhoenixMessage message) => print('Data: $message');
+  void _onMessage(PhoenixMessage<T> message) =>
+      _callbacks[message.topic]?.forEach((key, value) {
+        value(event: message.event, payload: message.payload);
+      });
+
+  void _removeSubscription(String topic, int key) {
+    _callbacks[topic].remove(key);
+
+    if (_callbacks[topic].isEmpty) {
+      send(event: 'phx_leave', topic: topic);
+    }
+  }
 
   void _startHeartbeats() {
     _heartbeatTimer =

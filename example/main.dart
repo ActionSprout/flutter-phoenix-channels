@@ -12,5 +12,9 @@ Future<void> main(List<String> args) async {
     onError: (dynamic error) => print('Error: $error'),
   );
 
-  socket.join(topic: 'room:lobby');
+  socket.join(
+    onData: ({String event, List<int> payload}) =>
+        print('Data: $event, $payload'),
+    topic: 'room:lobby',
+  );
 }
