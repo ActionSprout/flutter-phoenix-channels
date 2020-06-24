@@ -13,8 +13,8 @@ Function(dynamic) makeLogger(String label) => (dynamic event) {
 abstract class PhoenixSocketEncoding {
   const PhoenixSocketEncoding();
 
-  String encode(PhoenixMessage message);
-  PhoenixMessage decode(String buffer);
+  List<int> encode(PhoenixMessage message);
+  PhoenixMessage decode(List<int> buffer);
 }
 
 class PhoenixSocket {

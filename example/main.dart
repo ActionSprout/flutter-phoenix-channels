@@ -8,7 +8,7 @@ Future<void> main(List<String> args) async {
   final address = args.first;
   final socket = await PhoenixSocket.connect(
     address,
-    encoding: const PhoenixJsonEncoding(),
+    encoding: const PhoenixProtobufEncoding(),
   );
 
   socket.join(topic: 'room:lobby');

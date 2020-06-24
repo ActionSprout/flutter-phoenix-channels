@@ -7,8 +7,8 @@ class PhoenixJsonEncoding extends PhoenixSocketEncoding {
   const PhoenixJsonEncoding();
 
   @override
-  PhoenixMessage decode(String buffer) {
-    final parts = json.decode(buffer) as Map<String, dynamic>;
+  PhoenixMessage decode(List<int> buffer) {
+    final parts = json.decode(utf8.decode(buffer)) as Map<String, dynamic>;
 
     return PhoenixMessage<Map<String, dynamic>>(
       event: parts['event'] as String,
@@ -19,12 +19,12 @@ class PhoenixJsonEncoding extends PhoenixSocketEncoding {
   }
 
   @override
-  String encode(PhoenixMessage message) {
-    return json.encode(<String, dynamic>{
+  List<int> encode(PhoenixMessage message) {
+    return utf8.encode(json.encode(<String, dynamic>{
       'event': message.event,
       'payload': message.payload,
       'ref': message.ref,
       'topic': message.topic,
-    });
+    }));
   }
 }
