@@ -10,7 +10,7 @@ class PhoenixJsonEncoding extends PhoenixSocketEncoding {
   PhoenixMessage decode(String buffer) {
     final parts = json.decode(buffer) as Map<String, dynamic>;
 
-    return PhoenixMessage(
+    return PhoenixMessage<Map<String, dynamic>>(
       event: parts['event'] as String,
       payload: parts['payload'] as Map<String, dynamic>,
       ref: parts['ref'] as String,

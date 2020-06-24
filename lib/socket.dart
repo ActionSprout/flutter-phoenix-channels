@@ -49,13 +49,13 @@ class PhoenixSocket {
     Timer.periodic(const Duration(seconds: 30), (_) => _sendHeartbeat());
   }
 
-  void _sendHeartbeat() => send(
+  void _sendHeartbeat() => send<void>(
         event: 'heartbeat',
         topic: 'phoenix',
       );
 
-  void send({String event, dynamic payload, String ref, String topic}) {
-    ws.add(encoding.encode(PhoenixMessage(
+  void send<T>({String event, T payload, String ref, String topic}) {
+    ws.add(encoding.encode(PhoenixMessage<T>(
       event: event,
       payload: payload,
       ref: ref,
@@ -63,7 +63,7 @@ class PhoenixSocket {
     )));
   }
 
-  void sendJoin({String topic}) => send(
+  void sendJoin({String topic}) => send<void>(
         event: 'phx_join',
         topic: topic,
       );
