@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-Function(dynamic) makeLogger(String label) => (event) {
+Function(dynamic) makeLogger(String label) => (dynamic event) {
       print('$label: $event');
     };
 
 class PhoenixSocket {
-  WebSocket ws;
+  PhoenixSocket._({this.ws});
 
-  PhoenixSocket._({this.ws}) {}
+  WebSocket ws;
 
   static Future<PhoenixSocket> connect(String address) async {
     final socket = PhoenixSocket._(
@@ -31,7 +31,7 @@ class PhoenixSocket {
   }
 
   void _startHeartbeats() {
-    Timer.periodic(Duration(seconds: 30), (_) => _sendHeartbeat());
+    Timer.periodic(const Duration(seconds: 30), (_) => _sendHeartbeat());
   }
 
   void _sendHeartbeat() => send(
@@ -41,7 +41,7 @@ class PhoenixSocket {
 
   void send({String event, String payload, String ref, String topic}) {
     ws.add(
-      '{"topic": "$topic", "event": "$event", "payload": ${payload ?? '{}'}, "ref": ${ref ?? null}}',
+      '''{"topic": "$topic", "event": "$event", "payload": ${payload ?? '{}'}, "ref": $ref}''',
     );
   }
 

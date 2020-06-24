@@ -10,6 +10,9 @@ all: \
 	$(PROTO_FILES) \
 	$(REQUIRED_WKT_DART_FILES) \
 
+lint:
+	dartanalyzer --options analysis_options.yaml lib
+
 lib/proto/%.pb.dart: proto/%.proto
 	mkdir -p lib/proto
 	protoc --dart_out=lib/proto --proto_path=proto $<
