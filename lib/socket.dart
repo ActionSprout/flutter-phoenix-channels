@@ -26,6 +26,8 @@ class PhoenixSocket {
   final WebSocket ws;
   final PhoenixSocketEncoding encoding;
 
+  Timer _heartbeatTimer;
+
   static Future<PhoenixSocket> connect(
     String address, {
     PhoenixSocketEncoding encoding = const PhoenixJsonEncoding(),
@@ -39,7 +41,10 @@ class PhoenixSocket {
       socket.ws.listen(
         makeLogger('Data'),
         onError: makeLogger('Error'),
-        onDone: () => print('Done.'),
+        onDone: () {
+          print('Done.');
+          socket.close();
+        },
       );
     } on Object catch (e) {
       print('Exception: $e');
@@ -50,8 +55,15 @@ class PhoenixSocket {
     return socket;
   }
 
+  void close() {
+    _heartbeatTimer.cancel();
+
+    ws.close();
+  }
+
   void _startHeartbeats() {
-    Timer.periodic(const Duration(seconds: 30), (_) => _sendHeartbeat());
+    _heartbeatTimer =
+        Timer.periodic(const Duration(seconds: 30), (_) => _sendHeartbeat());
   }
 
   void _sendHeartbeat() => send<void>(
