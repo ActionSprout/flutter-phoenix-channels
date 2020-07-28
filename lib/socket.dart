@@ -46,7 +46,7 @@ class PhoenixSocket<T> {
   }) async =>
       PhoenixSocket<T>._(
         encoding: encoding,
-        ws: await WebSocket.connect('$address/websocket'),
+        ws: await WebSocket.connect(address),
       )
         .._attachListeners(onError: onError)
         .._startHeartbeats();
