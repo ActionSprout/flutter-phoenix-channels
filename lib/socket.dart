@@ -92,10 +92,14 @@ class PhoenixSocket<T> {
     );
   }
 
-  void _onMessage(PhoenixMessage<T> message) =>
-      _callbacks[message.topic]?.forEach((key, value) {
-        value(event: message.event, payload: message.payload);
-      });
+  void _onMessage(PhoenixMessage<T> message) {
+    // Clone the list to allow handlers to cancel subscriptions
+    final entries = _callbacks[message.topic]?.entries?.toList() ?? [];
+
+    for (final entry in entries) {
+      entry.value(event: message.event, payload: message.payload);
+    }
+  }
 
   void _removeSubscription(String topic, int key) {
     _callbacks[topic].remove(key);
