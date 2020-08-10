@@ -47,8 +47,11 @@ class PhoenixSocket<T> {
     PhoenixSocketEncoding<T> encoding,
     Function onError,
   }) async {
-    final webSocketUrl = url ?? Uri.parse('$address/$channel/websocket')
-      ..queryParameters.addEntries(parameters?.entries ?? {});
+    final webSocketUrl = url ?? Uri(
+      host: address,
+      path: '/$channel/websocket',
+      queryParameters: parameters,
+    );
 
     return PhoenixSocket<T>._(
       encoding: encoding,
