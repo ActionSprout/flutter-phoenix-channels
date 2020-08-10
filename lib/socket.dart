@@ -40,16 +40,23 @@ class PhoenixSocket<T> {
   int _nextKey = 0;
 
   static Future<PhoenixSocket<T>> connect<T>({
+    Uri url,
     String address,
+    String channel,
+    Map<String, String> parameters,
     PhoenixSocketEncoding<T> encoding,
     Function onError,
-  }) async =>
-      PhoenixSocket<T>._(
-        encoding: encoding,
-        ws: await WebSocket.connect('$address/websocket'),
-      )
-        .._attachListeners(onError: onError)
-        .._startHeartbeats();
+  }) async {
+    final webSocketUrl = url ?? Uri.parse('$address/$channel/websocket')
+      ..queryParameters.addEntries(parameters?.entries ?? {});
+
+    return PhoenixSocket<T>._(
+      encoding: encoding,
+      ws: await WebSocket.connect(webSocketUrl.toString()),
+    )
+      .._attachListeners(onError: onError)
+      .._startHeartbeats();
+  }
 
   void close() {
     _heartbeatTimer.cancel();
